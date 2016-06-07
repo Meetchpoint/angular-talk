@@ -1,5 +1,5 @@
 {
-  "name": "ideatic/angular-talk",
+  "name": "meetchpoint/angular-talk",
   "description": "Angular Chat Room and Comments Engine",
   "keywords": [
     "js",
@@ -12,9 +12,9 @@
   "license": "MIT",
   "authors": [
     {
-      "name": "Javier Marín",
-      "email": "contacto@ideatic.net",
-      "homepage": "http://www.ideatic.net/"
+      "name": "David Zamora",
+      "email": "info@meetchpoint.com",
+      "homepage": "http://www.meetchpoint.com/"
     }
   ],
   "require": {
