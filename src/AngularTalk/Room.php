@@ -142,6 +142,10 @@ class AngularTalk_Room
     public $debug = false;
 
     /**
+     * @var string
+     */
+    public $date_size = 'short';
+    /**
      * Strings used in the app
      * @var array
      */
