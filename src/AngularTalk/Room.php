@@ -142,6 +142,7 @@ class AngularTalk_Room
     public $debug = false;
 
     /**
+     * Indicates how long date should be in every message
      * @var string
      */
     public $date_size = 'short';
