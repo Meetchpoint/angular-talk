@@ -19,7 +19,7 @@
 
     <!-- Message body -->
     <div class="message-wrapper">
-        <div class="message-body" title="{{ ::message.date*1000 | date:'medium' }}">
+        <div class="message-body" id="message.id" title="{{ ::message.date*1000 | date:'medium' }}">
             <!-- Message info -->
             <div ng-hide="message.isEditing">
 
