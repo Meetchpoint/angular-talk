@@ -72,8 +72,8 @@
                 </span>
 
                     <!-- Date -->
-                    <time class="relative" datetime="{{::message.date*1000 | date:'yyyy-MM-dd HH:mm:ss Z'}}">
-                        {{::message.date*1000 | date: settings.date_size}}
+                    <time class="relative" datetime="{{ dateAgo(message.date) }}">
+                        {{ dateAgo(message.date) }}
                     </time>
                 </div>
             </div>
