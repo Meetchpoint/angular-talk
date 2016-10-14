@@ -88,7 +88,7 @@
                 <div class="tools">
                     <a ng-click="cancelEdit(message)">{{ ::settings.strings.cancel }}</a>
 
-                    <button type="button" class="submit" ng-click="submit(message)" ng-disabled="!message.content">
+                    <button type="button" class="submit" ng-click="save(message)" ng-disabled="!message.content">
                         {{ message.id ? settings.strings.save : settings.strings.submit }}
                     </button>
                 </div>
