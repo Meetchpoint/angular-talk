@@ -155,9 +155,12 @@ angular.module('angularTalk', [])
                     }
                 };
 
-                $scope.dateAgo = function (timestamp){
+                $scope.dateAgo = function (timestamp) {
 
-                    var strTimeAgo = '', timeDifference = moment().unix() - timestamp;
+                    var strTimeAgo = '', locale = window.navigator.userLanguage || window.navigator.language,
+                        timeDifference = moment().unix() - timestamp;
+                    moment.locale(locale);
+
                     if (timeDifference < 86400) {
                         strTimeAgo = moment.unix(timestamp).fromNow();
                     } else if (timeDifference < 172800) {
