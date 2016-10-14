@@ -155,6 +155,20 @@ angular.module('angularTalk', [])
                     }
                 };
 
+                $scope.dateAgo = function (timestamp){
+
+                    var strTimeAgo = '', timeDifference = moment().unix() - timestamp;
+                    if (timeDifference < 86400) {
+                        strTimeAgo = moment.unix(timestamp).fromNow();
+                    } else if (timeDifference < 172800) {
+                        strTimeAgo = moment.unix(timestamp).calendar();
+                    } else {
+                        strTimeAgo = moment.unix(timestamp).format('lll');
+                    }
+
+                    return strTimeAgo;
+                };
+
                 //Delete message
 
                 function addParam(url, key, value) {
