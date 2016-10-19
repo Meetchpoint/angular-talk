@@ -104,7 +104,7 @@ angular.module('angularTalk', [])
                 $scope.submit = function submit() {
 
                     //Si comentamos $scope.save($scope.current.message);
-                    //No envía al pulsar intro cuando se edita o se responde, hace un retorno de carro.
+                    //No envía al pulsar intro cuando se edita o se responde, hace un retorno de carro
                     if (!$scope.message.content){
                         $scope.save($scope.current.message);
                         return;
