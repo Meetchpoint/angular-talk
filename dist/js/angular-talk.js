@@ -105,7 +105,7 @@ angular.module('angularTalk', [])
 
                     //Si comentamos $scope.save($scope.current.message);
                     //No envía al pulsar intro cuando se edita o se responde, hace un retorno de carro
-                    if (!$scope.message.content){
+                    if (!$scope.message.content) {
                         $scope.save($scope.current.message);
                         return;
                     }
@@ -138,13 +138,16 @@ angular.module('angularTalk', [])
 
                 //Reply messages
                 $scope.reply = function reply(message) {
-                    message.$replies.push({
-                        author: settings.sender,
-                        isEditing: true,
-                        content: '',
-                        date: new Date / 1E3 | 0,
-                        replyToID: message.id
-                    });
+                    //Con el if evitamos que se puedan abrir varias respuestas al mismo tiempo sin haber respondido a las anteriores.
+                    if (message.$replies.length < 1 || typeof message.$replies[message.$replies.length - 1].id !== "undefined") {
+                        message.$replies.push({
+                            author: settings.sender,
+                            isEditing: true,
+                            content: '',
+                            date: new Date / 1E3 | 0,
+                            replyToID: message.id
+                        });
+                    }
                 };
 
                 //Edit message
