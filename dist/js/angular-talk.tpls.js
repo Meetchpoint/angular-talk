@@ -138,6 +138,10 @@ angular.module('angularTalk', [])
 
                 //Reply messages
                 $scope.reply = function reply(message) {
+
+                    //Close empty replies
+                    closeOpenReplies($scope.messages);
+
                     //Con el if evitamos que se puedan abrir varias respuestas al mismo tiempo sin haber respondido a las anteriores.
                     if (message.$replies.length < 1 || typeof message.$replies[message.$replies.length - 1].id !== "undefined") {
                         message.$replies.push({
@@ -148,6 +152,39 @@ angular.module('angularTalk', [])
                             replyToID: message.id
                         });
                     }
+
+                    //Focus when reply
+                    focusText(message);
+                };
+
+                //Close unanswered open replies
+                var closeOpenReplies = function closeOpenReplies(messages){
+                    angular.forEach(messages, function hasOpenReply(message){
+                        //has open replies
+                        if(message.$replies.length){
+                            //close all the open replies
+                            angular.forEach(message.$replies,function (replyMsg, k) {
+                                if(!replyMsg.content){
+                                    //close unanswered reply
+                                    $scope.cancelEdit(replyMsg);
+                                }
+                            });
+                        }
+                    });
+                };
+
+                //Focus textarea when reply
+                var focusText = function (message, timeout) {
+                    timeout = timeout || 300;
+                    var query = '#replyto_' + message.id + ' textarea',
+                        nodes = null;
+                    //esperamos 300ms para que se cargue el contenido
+                    $timeout(function () {
+                        nodes = angular.element($element[0].querySelectorAll(query));
+                        if (nodes.length) {
+                            nodes[nodes.length - 1].focus();
+                        }
+                    }, 300);
                 };
 
                 //Edit message
@@ -439,6 +476,6 @@ angular.module('angularTalk', [])
 }]);
 
 angular.module("angularTalk").run(["$templateCache", function($templateCache) { 
-$templateCache.put("angularTalk\/messages.html","<div\nng-repeat-start=\"message in messages | orderBy:'+date' track by message.id || $id(message)\"\nclass=\"moment\"\nng-show=\"settings.groupMessages && ($index==0 || (message.date - previousMessage(message).date)>30000)\">\n<time\nclass=\"relative\" datetime=\"{{ ::message.date*1000 | date:'yyyy-MM-dd HH:mm:ss Z' }}\">{{ ::message.date*1000 | date:'medium' }}<\/time><\/div><div\nng-repeat-end class=\"message\" ng-class=\"{\n'from-sender': message.author.id==settings.sender.id,\nreversed:settings.reverseSenderMessages && message.author.id==settings.sender.id,\nactive:message.isActive,\nerror:message.isError}\" ng-click=\"message.isActive=!message.isActive\">\n<a\nng-show=\"settings.showFaces\" class=\"message-img\" ng-href=\"{{::message.author.url}}\" title=\"{{::message.author.name}}\">\n<img\nng-src=\"{{::message.author.icon}}\" alt=\"{{::message.author.name}}\">\n<\/a><div\nclass=\"message-wrapper\"><div\nclass=\"message-body\"  id=\"{{ ::message.id }}\" title=\"{{ ::message.date*1000 | date:'medium' }}\"><div\nng-hide=\"message.isEditing\">\n<span\nng-show=\"::settings.showUserName\">\n<a\nclass=\"author\" ng-href=\"{{ ::message.author.url }}\">\n<b>{{ ::message.author.name }}<\/b>\n<\/a>\n<\/span>{{ message.content }}<div\nclass=\"message-info\" ng-show=\"!settings.groupMessages || message.isActive || message.isSending || message.isError\">\n<span\nng-show=\"message.isError\">\n<a\nclass=\"retry-send\" ng-click=\"save(message)\">\n<i\nclass=\"icon icon-warning fa fa-warning\"><\/i>\n{{ ::settings.strings.retrySend }}\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<span\nng-show=\"message.isSending\">\n<span\nclass=\"loader icon icon-circle-o-notch icon-spin fa fa-circle-o-notch fa-spin\"><\/span>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<span\nng-show=\"::replyLevel < settings.replyLevels-1 && settings.allowReplies && message.id && !settings.readOnly\">\n<a\nclass=\"reply\" ng-click=\"reply(message)\" title=\"{{ ::settings.strings.reply }}\">\n<i\nclass=\"icon icon-reply fa fa-reply\"><\/i>\n<span\nclass=\"text-info\">{{ ::settings.strings.reply }}<\/span>\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<span\nng-show=\"::settings.sender.isModerator || message.author.id == settings.sender.id\">\n<a\nclass=\"edit\" ng-click=\"edit(message)\" title=\"{{ ::settings.strings.edit }}\">\n<i\nclass=\"icon icon-edit fa fa-edit\"><\/i>\n<span\nclass=\"text-info\">{{ ::settings.strings.edit }}<\/span>\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<a\nclass=\"delete\" ng-click=\"delete(message)\" title=\"{{ ::settings.strings.delete }}\">\n<i\nclass=\"icon icon-remove fa fa-remove\"><\/i>\n<span\nclass=\"text-info\">{{ ::settings.strings.delete }}<\/span>\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<time\nclass=\"relative\" datetime=\"{{ dateAgo(message.date) }}\">\n{{ dateAgo(message.date) }}\n<\/time><\/div><\/div><div\nng-if=\"message.isEditing\"><textarea ng-model=\"message.content\"\n                       ng-keyup=\"messageKeyPress($event)\"\n                       ng-focus=\"current.message = message\"\n                       placeholder=\"{{ ::settings.strings.messagePlaceholder }}\"><\/textarea><div\nclass=\"tools\">\n<a\nng-click=\"cancelEdit(message)\">{{ ::settings.strings.cancel }}<\/a><button\ntype=\"button\" class=\"submit\" ng-click=\"save(message)\" ng-disabled=\"!message.content\">\n{{ message.id ? settings.strings.save : settings.strings.submit }}\n<\/button><\/div><\/div><\/div>\n<ng-include\nng-if=\"message.$replies.length>0 && settings.allowReplies && replyLevel < settings.replyLevels-1\"\nsrc=\"'angularTalk\/messages.html'\"\ninit=\"messages = message.$replies; replyLevel = replyLevel+1\"><\/ng-include><\/div><\/div>");
+$templateCache.put("angularTalk\/messages.html","<div\nng-repeat-start=\"message in messages | orderBy:'+date' track by message.id || $id(message)\"\nclass=\"moment\"\nng-show=\"settings.groupMessages && ($index==0 || (message.date - previousMessage(message).date)>30000)\">\n<time\nclass=\"relative\" datetime=\"{{ ::message.date*1000 | date:'yyyy-MM-dd HH:mm:ss Z' }}\">{{ ::message.date*1000 | date:'medium' }}<\/time><\/div><div\nng-repeat-end class=\"message\" ng-class=\"{\n'from-sender': message.author.id==settings.sender.id,\nreversed:settings.reverseSenderMessages && message.author.id==settings.sender.id,\nactive:message.isActive,\nerror:message.isError}\" ng-click=\"message.isActive=!message.isActive\">\n<a\nng-show=\"settings.showFaces\" class=\"message-img\" ng-href=\"{{::message.author.url}}\" title=\"{{::message.author.name}}\">\n<img\nng-src=\"{{::message.author.icon}}\" alt=\"{{::message.author.name}}\">\n<\/a><div\nclass=\"message-wrapper\"><div\nclass=\"message-body\"  id=\"{{ ::message.id }}\" title=\"{{ ::message.date*1000 | date:'medium' }}\"><div\nng-hide=\"message.isEditing\">\n<span\nng-show=\"::settings.showUserName\">\n<a\nclass=\"author\" ng-href=\"{{ ::message.author.url }}\">\n<b>{{ ::message.author.name }}<\/b>\n<\/a>\n<\/span>{{ message.content }}<div\nclass=\"message-info\" ng-show=\"!settings.groupMessages || message.isActive || message.isSending || message.isError\">\n<span\nng-show=\"message.isError\">\n<a\nclass=\"retry-send\" ng-click=\"save(message)\">\n<i\nclass=\"icon icon-warning fa fa-warning\"><\/i>\n{{ ::settings.strings.retrySend }}\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<span\nng-show=\"message.isSending\">\n<span\nclass=\"loader icon icon-circle-o-notch icon-spin fa fa-circle-o-notch fa-spin\"><\/span>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<span\nng-show=\"::replyLevel < settings.replyLevels-1 && settings.allowReplies && message.id && !settings.readOnly\">\n<a\nclass=\"reply\" ng-click=\"reply(message)\" title=\"{{ ::settings.strings.reply }}\">\n<i\nclass=\"icon icon-reply fa fa-reply\"><\/i>\n<span\nclass=\"text-info\">{{ ::settings.strings.reply }}<\/span>\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<span\nng-show=\"::settings.sender.isModerator || message.author.id == settings.sender.id\">\n<a\nclass=\"edit\" ng-click=\"edit(message)\" title=\"{{ ::settings.strings.edit }}\">\n<i\nclass=\"icon icon-edit fa fa-edit\"><\/i>\n<span\nclass=\"text-info\">{{ ::settings.strings.edit }}<\/span>\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<a\nclass=\"delete\" ng-click=\"delete(message)\" title=\"{{ ::settings.strings.delete }}\">\n<i\nclass=\"icon icon-remove fa fa-remove\"><\/i>\n<span\nclass=\"text-info\">{{ ::settings.strings.delete }}<\/span>\n<\/a>\n<span\nclass=\"bullet\">\u2022<\/span>\n<\/span>\n<time\nclass=\"relative\" datetime=\"{{ dateAgo(message.date) }}\">\n{{ dateAgo(message.date) }}\n<\/time><\/div><\/div><div\nng-if=\"message.isEditing\"><textarea ng-model=\"message.content\"\n                       ng-keyup=\"messageKeyPress($event)\"\n                       ng-focus=\"current.message = message\"\n                       placeholder=\"{{ ::settings.strings.messagePlaceholder }}\"><\/textarea><div\nclass=\"tools\">\n<a\nng-click=\"cancelEdit(message)\">{{ ::settings.strings.cancel }}<\/a><button\ntype=\"button\" class=\"submit\" ng-click=\"save(message)\" ng-disabled=\"!message.content\">\n{{ message.id ? settings.strings.save : settings.strings.submit }}\n<\/button><\/div><\/div><\/div>\n<ng-include\nng-if=\"message.$replies.length>0 && settings.allowReplies && replyLevel < settings.replyLevels-1\"\nsrc=\"'angularTalk\/messages.html'\" id=\"replyto_{{ ::message.id }}\"\ninit=\"messages = message.$replies; replyLevel = replyLevel+1\"><\/ng-include><\/div><\/div>");
 $templateCache.put("angularTalk\/room.html","<div\nclass=\"messages\" angular-talk-scroll ng-class=\"{faces:settings.showFaces}\" on-scroll=\"onScroll(offset)\"><div\nclass=\"main-loader\" ng-show=\"loadingOlder\">\n<span\nclass=\"loader icon icon-circle-o-notch icon-spin fa fa-circle-o-notch fa-spin\"><\/span><\/div><div\nclass=\"empty-room\" ng-show=\"messages.length==0\">{{ ::settings.strings.emptyRoom }}<\/div>\n<ng-include\nsrc=\"'angularTalk\/messages.html'\" init=\"messages = messages; replyLevel = 0\"><\/ng-include><\/div><div\nclass=\"footer\" ng-if=\"!settings.readOnly\"><textarea ng-model=\"message.content\"\n              ng-keyup=\"messageKeyPress($event)\"\n              rows=\"3\" cols=\"1\"\n              placeholder=\"{{ ::settings.strings.messagePlaceholder }}\"><\/textarea><div\nstyle=\"text-align: right\">\n<button\ntype=\"button\" class=\"submit\" ng-click=\"submit(message)\" ng-disabled=\"!message.content\">\n{{message.id ? settings.strings.save : settings.strings.submit}}\n<\/button><\/div><\/div>");
 }]);

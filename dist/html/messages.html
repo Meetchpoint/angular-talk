@@ -97,7 +97,7 @@
 
         <!-- Replies -->
         <ng-include ng-if="message.$replies.length>0 && settings.allowReplies && replyLevel < settings.replyLevels-1"
-                    src="'angularTalk/messages.html'"
+                    src="'angularTalk/messages.html'" id="replyto_{{ ::message.id }}"
                     init="messages = message.$replies; replyLevel = replyLevel+1"></ng-include>
     </div>
 </div>

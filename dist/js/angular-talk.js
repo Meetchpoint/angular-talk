@@ -138,6 +138,10 @@ angular.module('angularTalk', [])
 
                 //Reply messages
                 $scope.reply = function reply(message) {
+
+                    //Close empty replies
+                    closeOpenReplies($scope.messages);
+
                     //Con el if evitamos que se puedan abrir varias respuestas al mismo tiempo sin haber respondido a las anteriores.
                     if (message.$replies.length < 1 || typeof message.$replies[message.$replies.length - 1].id !== "undefined") {
                         message.$replies.push({
@@ -148,6 +152,39 @@ angular.module('angularTalk', [])
                             replyToID: message.id
                         });
                     }
+
+                    //Focus when reply
+                    focusText(message);
+                };
+
+                //Close unanswered open replies
+                var closeOpenReplies = function closeOpenReplies(messages){
+                    angular.forEach(messages, function hasOpenReply(message){
+                        //has open replies
+                        if(message.$replies.length){
+                            //close all the open replies
+                            angular.forEach(message.$replies,function (replyMsg, k) {
+                                if(!replyMsg.content){
+                                    //close unanswered reply
+                                    $scope.cancelEdit(replyMsg);
+                                }
+                            });
+                        }
+                    });
+                };
+
+                //Focus textarea when reply
+                var focusText = function (message, timeout) {
+                    timeout = timeout || 300;
+                    var query = '#replyto_' + message.id + ' textarea',
+                        nodes = null;
+                    //esperamos 300ms para que se cargue el contenido
+                    $timeout(function () {
+                        nodes = angular.element($element[0].querySelectorAll(query));
+                        if (nodes.length) {
+                            nodes[nodes.length - 1].focus();
+                        }
+                    }, 300);
                 };
 
                 //Edit message
