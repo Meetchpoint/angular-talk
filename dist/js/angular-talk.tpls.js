@@ -205,7 +205,7 @@ angular.module('angularTalk', [])
 
                     var strTimeAgo = '', locale = window.navigator.userLanguage || window.navigator.language,
                         timeDifference = moment().unix() - timestamp;
-                    moment.locale(locale);
+                    moment.updateLocale(locale);
 
                     if (timeDifference < 86400) {
                         strTimeAgo = moment.unix(timestamp).fromNow();
