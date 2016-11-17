@@ -203,9 +203,8 @@ angular.module('angularTalk', [])
 
                 $scope.dateAgo = function (timestamp) {
 
-                    var strTimeAgo = '', locale = window.navigator.userLanguage || window.navigator.language,
-                        timeDifference = moment().unix() - timestamp;
-                    moment.updateLocale(locale);
+                    var strTimeAgo = '',
+                        timeDifference = moment.unix() - timestamp;
 
                     if (timeDifference < 86400) {
                         strTimeAgo = moment.unix(timestamp).fromNow();

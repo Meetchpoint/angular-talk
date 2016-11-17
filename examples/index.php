@@ -81,6 +81,6 @@ if (isset($_GET['commentsEndpoint'])) {
 
 <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.4.7/angular.min.js"></script>
 <script src="../dist/js/angular-talk.tpls.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.1/moment-with-locales.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.16.0/moment.min.js"></script>
 </body>
 </html>
